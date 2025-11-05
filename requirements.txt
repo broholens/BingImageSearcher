@@ -1,0 +1,4 @@
+fastapi
+fake_useragent
+requests
+uvicorn
