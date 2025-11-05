@@ -1,6 +1,3 @@
-"""
-pip install flask requests fake_useragent
-"""
 import re
 from fake_useragent import UserAgent
 import requests
@@ -32,7 +29,7 @@ async def image_search(keyword: str, limit: int = 30):
 
 def get_bing_image_urls(keyword, limit=30):
     """爬取Bing图片搜索结果的图片URL"""
-    # Bing图片搜索的基础URL（通过观察网页URL结构获取）
+    # TODO: 添加网站黑名单，如果搜索出来的URL在黑名单网站中，则丢弃继续查询
     base_url = "https://www.bing.com/images/search"
     params = {
         "q": keyword,
