@@ -18,11 +18,11 @@ async def image_search(keyword: str, limit: int = 30):
 
     try:
         # 爬取图片URL
-        middle_picture_urls, tiny_picture_urls = get_bing_image_urls(keyword, limit)
-        return {
-            "middle_picture_urls": middle_picture_urls,
-            "tiny_picture_urls": tiny_picture_urls
-        }
+        urls = get_bing_image_urls(keyword, limit)
+        return [
+            {"largeUrl": url[0], "thumbUrl": url[1]}
+            for url in urls
+        ]
     except Exception as e:
         return {"error": f"处理请求失败: {str(e)}"}
 
@@ -53,12 +53,10 @@ def get_bing_image_urls(keyword, limit=30):
             allow_redirects=True
         )
         response.encoding = "utf-8"
-        middle_picture_links = re.findall('murl&quot;:&quot;(.*?)&quot;', response.text)
-        tiny_picture_links = re.findall('turl&quot;:&quot;(.*?)&quot;', response.text)
-        tiny_picture_links = [i for i in tiny_picture_links if i != '']
-        return middle_picture_links[:limit], tiny_picture_links[:limit]
+        links = re.findall('murl&quot;:&quot;(.*?)&quot;,&quot;turl&quot;:&quot;(.*?)&quot;', response.text)
+        return links[:limit]
     except Exception:
-        return [], []
+        return []
 
 
 if __name__ == '__main__':
