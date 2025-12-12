@@ -18,10 +18,10 @@ async def image_search(keyword: str, limit: int = 30):
 
     try:
         # 爬取图片URL
-        image_urls = get_bing_image_urls(keyword, limit)
+        middle_picture_urls, tiny_picture_urls = get_bing_image_urls(keyword, limit)
         return {
-            "count": len(image_urls),
-            "urls": image_urls
+            "middle_picture_urls": middle_picture_urls,
+            "tiny_picture_urls": tiny_picture_urls
         }
     except Exception as e:
         return {"error": f"处理请求失败: {str(e)}"}
@@ -53,13 +53,13 @@ def get_bing_image_urls(keyword, limit=30):
             allow_redirects=True
         )
         response.encoding = "utf-8"
-        links = re.findall('murl&quot;:&quot;(.*?)&quot;', response.text)
-        if len(links) >= limit:
-            return links[:limit]
-        return links
+        middle_picture_links = re.findall('murl&quot;:&quot;(.*?)&quot;', response.text)
+        tiny_picture_links = re.findall('turl&quot;:&quot;(.*?)&quot;', response.text)
+        tiny_picture_links = [i for i in tiny_picture_links if i != '']
+        return middle_picture_links[:limit], tiny_picture_links[:limit]
     except Exception:
-        return []
+        return [], []
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=9999, reload=True)  # ASGI服务器
+    uvicorn.run(app, host='0.0.0.0', port=9999)  # ASGI服务器
